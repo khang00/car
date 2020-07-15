@@ -3,7 +3,7 @@ package khang.revive.car.model
 import org.bson.types.ObjectId
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document
-import java.time.LocalDateTime
+import java.time.LocalDate
 
 @Document
 data class Car(@Id val id: String = ObjectId.get().toHexString(),
@@ -16,6 +16,6 @@ data class Car(@Id val id: String = ObjectId.get().toHexString(),
                val location: String = "",
                val seat: String = "",
                val description: String = "",
-               val postedDate: LocalDateTime = LocalDateTime.now(),
-               val lastMaintenanceDate: LocalDateTime = LocalDateTime.now()
+               val postedDate: LocalDate = LocalDate.now(),
+               val lastMaintenanceDate: LocalDate = LocalDate.now()
 )
