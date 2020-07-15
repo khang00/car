@@ -42,9 +42,7 @@ class CarRentingSuite(@Autowired private val carRenting: CarRenting) {
         assert(rentingContract.get().car == car.id)
         assert(rentingContract.get().renter == renter.id)
 
-        val updatedCar = carRenting.getCarById(car.id)
-        assert(updatedCar.isPresent)
-        assert(CarStatus.WAITING == updatedCar.get().status)
+        assertCarStatus(car.id, CarStatus.WAITING)
     }
 
     @Test
@@ -55,9 +53,12 @@ class CarRentingSuite(@Autowired private val carRenting: CarRenting) {
         val approvedContract = carRenting.approveRentingContract(sale, rentingContract.get())
 
         assert(approvedContract == rentingContract.get().copy(sale = sale.id))
+        assertCarStatus(car.id, CarStatus.RENTING)
+    }
 
-        val updatedCar = carRenting.getCarById(car.id)
+    fun assertCarStatus(carId: String, expectedStatus: CarStatus) {
+        val updatedCar = carRenting.getCarById(carId)
         assert(updatedCar.isPresent)
-        assert(CarStatus.RENTING == updatedCar.get().status)
+        assert(expectedStatus == updatedCar.get().status)
     }
 }
