@@ -23,15 +23,15 @@ class CarRenting @Autowired constructor(val carRepository: CarRepository,
 
     fun approveRentingContract(sale: Employee, contract: Contract): Optional<Contract> {
         return employeeRepository.findById(sale.id).flatMap { existedSale ->
-            carRepository.findById(contract.car).map { updateCarStatus(it, CarStatus.RENTING) }
+            carRepository.findById(contract.car).map { updateCarStatus(it, CarStatus.RENTING) } // side effects
                     .map { contractRepository.save(contract.copy(sale = existedSale.id)) }
         }
     }
 
     fun rentCar(renter: User, car: Car): Optional<Contract> {
         return carRepository.findById(car.id).map { existedCar ->
-            updateCarStatus(existedCar, CarStatus.WAITING)
-            userRepository.findById(renter.id).ifPresentOrElse({}, { userRepository.save(renter) })
+            updateCarStatus(existedCar, CarStatus.WAITING)  // side effects
+            userRepository.findById(renter.id).ifPresentOrElse({}, { userRepository.save(renter) })  // side effects
             contractRepository.save(Contract(renter = renter.id, car = existedCar.id))
         }
     }
