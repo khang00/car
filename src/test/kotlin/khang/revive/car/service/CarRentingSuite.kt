@@ -1,7 +1,6 @@
 package khang.revive.car.service
 
 import khang.revive.car.Repository.CarRepository
-import khang.revive.car.Repository.ContractRepository
 import khang.revive.car.Repository.EmployeeRepository
 import khang.revive.car.Repository.UserRepository
 import khang.revive.car.model.*
@@ -31,25 +30,6 @@ class CarRentingSuite @Autowired constructor(private val carRenting: CarRenting,
     @AfterEach
     fun deleteDatabase() {
         carRenting.deleteAll()
-    }
-
-    @Test
-    fun updateCarStatus() {
-        carRenting.updateCarStatus(car, CarStatus.WAITING)
-        assertCarStatus(car.id, CarStatus.WAITING)
-
-        carRenting.updateCarStatus(car, CarStatus.RENTING)
-        assertCarStatus(car.id, CarStatus.RENTING)
-
-        carRenting.updateCarStatus(car, CarStatus.MAINTENANCE)
-        assertCarStatus(car.id, CarStatus.MAINTENANCE)
-    }
-
-    @Test
-    fun getAllCar() {
-        val cars = carRepository.findAll()
-        val expected = listOf(car)
-        assert(cars == expected)
     }
 
     @Test
@@ -97,6 +77,75 @@ class CarRentingSuite @Autowired constructor(private val carRenting: CarRenting,
 
         //contract should be empty
         assert(approvedContract.isEmpty)
+    }
+
+    @Test
+    fun transferToMaintenance() {
+        // Given
+        val renter = User()
+        val rentingContract = carRenting.rentCar(renter, car)
+        val approvedContract = carRenting.approveRentingContract(sale, rentingContract.get())
+        val maintenanceContract = carRenting.transferToMaintenance(maintainer, approvedContract.get())
+
+        // Employee should be existed
+        assert(employeeRepository.findById(maintainer.id).isPresent)
+
+        // Contract should contains information of the employee who maintain the car mentioned in the contract
+        assert(maintenanceContract.get() == maintenanceContract.get().copy(maintainer = maintainer.id))
+
+        // Car status should be changed to renting
+        assertCarStatus(car.id, CarStatus.MAINTENANCE)
+    }
+
+    @Test
+    fun transferToMaintenanceWithNonExistedEmployee() {
+        // Given
+        val renter = User()
+        val nonExistedEmployee = Employee(role = EmployeeRole.MAINTAINER, name = "", account = "", password = "")
+        val rentingContract = carRenting.rentCar(renter, car)
+        val approvedContract = carRenting.approveRentingContract(sale, rentingContract.get())
+        val maintenanceContract = carRenting.transferToMaintenance(nonExistedEmployee, approvedContract.get())
+
+        //contract should be empty
+        assert(maintenanceContract.isEmpty)
+    }
+
+    @Test
+    fun finishMaintenance() {
+        // Given
+        val renter = User()
+        val rentingContract = carRenting.rentCar(renter, car)
+        val approvedContract = carRenting.approveRentingContract(sale, rentingContract.get())
+        val maintenanceContract = carRenting.transferToMaintenance(maintainer, approvedContract.get())
+        val endContract = carRenting.finishMaintenance(maintenanceContract.get(), "oke")
+
+        // Employee should be existed
+        assert(employeeRepository.findById(maintainer.id).isPresent)
+
+        // Contract should contains the maintenance details
+        assert(endContract.get() == endContract.get().copy(maintenanceDetails = "oke"))
+
+        // Car status should be changed to renting
+        assertCarStatus(car.id, CarStatus.AVAILABLE)
+    }
+
+    @Test
+    fun updateCarStatus() {
+        carRenting.updateCarStatus(car, CarStatus.WAITING)
+        assertCarStatus(car.id, CarStatus.WAITING)
+
+        carRenting.updateCarStatus(car, CarStatus.RENTING)
+        assertCarStatus(car.id, CarStatus.RENTING)
+
+        carRenting.updateCarStatus(car, CarStatus.MAINTENANCE)
+        assertCarStatus(car.id, CarStatus.MAINTENANCE)
+    }
+
+    @Test
+    fun getAllCar() {
+        val cars = carRepository.findAll()
+        val expected = listOf(car)
+        assert(cars == expected)
     }
 
     fun assertCarStatus(carId: String, expectedStatus: CarStatus) {

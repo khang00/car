@@ -14,19 +14,6 @@ class CarRenting @Autowired constructor(val carRepository: CarRepository,
                                         val contractRepository: ContractRepository,
                                         val userRepository: UserRepository,
                                         val employeeRepository: EmployeeRepository) {
-    fun deleteAll() {
-        carRepository.deleteAll()
-        contractRepository.deleteAll()
-        userRepository.deleteAll()
-        employeeRepository.deleteAll()
-    }
-
-    fun approveRentingContract(sale: Employee, contract: Contract): Optional<Contract> {
-        return employeeRepository.findById(sale.id).flatMap { existedSale ->
-            carRepository.findById(contract.car).map { updateCarStatus(it, CarStatus.RENTING) } // side effects
-                    .map { contractRepository.save(contract.copy(sale = existedSale.id)) }
-        }
-    }
 
     fun rentCar(renter: User, car: Car): Optional<Contract> {
         return carRepository.findById(car.id).map { existedCar ->
@@ -36,7 +23,38 @@ class CarRenting @Autowired constructor(val carRepository: CarRepository,
         }
     }
 
+    fun approveRentingContract(sale: Employee, contract: Contract): Optional<Contract> {
+        return employeeRepository.findById(sale.id).flatMap { existedSale ->
+            carRepository.findById(contract.car).map { updateCarStatus(it, CarStatus.RENTING) } // side effects
+                    .map { contractRepository.save(contract.copy(sale = existedSale.id)) }
+        }
+    }
+
+    fun transferToMaintenance(maintainer: Employee, contract: Contract): Optional<Contract> {
+        return employeeRepository.findById(maintainer.id).flatMap { existedMaintainer ->
+            carRepository.findById(contract.car).map { updateCarStatus(it, CarStatus.MAINTENANCE) } // side effects
+                    .map { contractRepository.save(contract.copy(maintainer = existedMaintainer.id)) }
+        }
+    }
+
+    fun finishMaintenance(contract: Contract, maintenanceDetails: String): Optional<Contract> {
+        return contractRepository.findById(contract.id)
+                .map { existedContract ->
+                    carRepository.findById(existedContract.car)
+                            .map { updateCarStatus(it, CarStatus.AVAILABLE) } // side effects
+
+                    contractRepository.save(existedContract.copy(maintenanceDetails = maintenanceDetails))
+                }
+    }
+
     fun updateCarStatus(car: Car, status: CarStatus): Car {
         return carRepository.save(car.copy(status = status))
+    }
+
+    fun deleteAll() {
+        carRepository.deleteAll()
+        contractRepository.deleteAll()
+        userRepository.deleteAll()
+        employeeRepository.deleteAll()
     }
 }

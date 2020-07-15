@@ -11,4 +11,7 @@ data class Contract(@Id val id: String = ObjectId.get().toHexString(),
                     val car: String,
                     val sale: String = "",
                     val maintainer: String = "",
+                    val maintenanceDetails: String = "",
+                    val fine: Long = 0,
+                    val totalFee: Long = 0,
                     val createDate: LocalDate = LocalDate.now())
