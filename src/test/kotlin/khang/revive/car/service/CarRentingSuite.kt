@@ -1,5 +1,9 @@
 package khang.revive.car.service
 
+import khang.revive.car.Repository.CarRepository
+import khang.revive.car.Repository.ContractRepository
+import khang.revive.car.Repository.EmployeeRepository
+import khang.revive.car.Repository.UserRepository
 import khang.revive.car.model.*
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
@@ -8,16 +12,20 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 
 @SpringBootTest
-class CarRentingSuite(@Autowired private val carRenting: CarRenting) {
+class CarRentingSuite @Autowired constructor(private val carRenting: CarRenting,
+                                             private val carRepository: CarRepository,
+                                             private val userRepository: UserRepository,
+                                             private val employeeRepository: EmployeeRepository) {
+
     val car = Car(brand = "yamaha", color = "white", seat = "4")
     val sale = Employee(role = EmployeeRole.SALE, name = "khang1", account = "khang01", password = "1")
     val maintainer = Employee(role = EmployeeRole.MAINTAINER, name = "khang2", account = "khang02", password = "2")
 
     @BeforeEach
     fun populateDatabase() {
-        carRenting.createCar(car)
-        carRenting.createEmployee(sale)
-        carRenting.createEmployee(maintainer)
+        carRepository.save(car)
+        employeeRepository.save(sale)
+        employeeRepository.save(maintainer)
     }
 
     @AfterEach
@@ -38,18 +46,8 @@ class CarRentingSuite(@Autowired private val carRenting: CarRenting) {
     }
 
     @Test
-    fun createCar() {
-        assert(car == carRenting.createCar(car))
-    }
-
-    @Test
-    fun createEmployee() {
-        assert(sale == carRenting.createEmployee(sale))
-    }
-
-    @Test
     fun getAllCar() {
-        val cars = carRenting.getAllCar()
+        val cars = carRepository.findAll()
         val expected = listOf(car)
         assert(cars == expected)
     }
@@ -69,7 +67,7 @@ class CarRentingSuite(@Autowired private val carRenting: CarRenting) {
         assertCarStatus(car.id, CarStatus.WAITING)
 
         // User should be created if they have not been created
-        assert(carRenting.getUserById(renter.id).isPresent)
+        assert(userRepository.findById(renter.id).isPresent)
     }
 
     @Test
@@ -80,7 +78,7 @@ class CarRentingSuite(@Autowired private val carRenting: CarRenting) {
         val approvedContract = carRenting.approveRentingContract(sale, rentingContract.get())
 
         // Employee should be existed
-        assert(carRenting.getEmployeeById(sale.id).isPresent)
+        assert(employeeRepository.findById(sale.id).isPresent)
 
         // Contract should contains information of the employee who approved the contract
         assert(approvedContract.get() == rentingContract.get().copy(sale = sale.id))
@@ -102,7 +100,7 @@ class CarRentingSuite(@Autowired private val carRenting: CarRenting) {
     }
 
     fun assertCarStatus(carId: String, expectedStatus: CarStatus) {
-        val updatedCar = carRenting.getCarById(carId)
+        val updatedCar = carRepository.findById(carId)
         assert(updatedCar.isPresent)
         assert(expectedStatus == updatedCar.get().status)
     }
