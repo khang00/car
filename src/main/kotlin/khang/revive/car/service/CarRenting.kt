@@ -13,9 +13,9 @@ import java.util.*
 class CarRenting @Autowired constructor(val carRepository: CarRepository,
                                         val contractRepository: ContractRepository,
                                         val userRepository: UserRepository,
-                                        val employeeRepository: EmployeeRepository) {
+                                        val employeeRepository: EmployeeRepository) : RentingService {
 
-    fun rentCar(renter: User, car: Car): Optional<Contract> {
+    override fun rentCar(renter: User, car: Car): Optional<Contract> {
         return carRepository.findById(car.id).map { existedCar ->
             updateCarStatus(existedCar, CarStatus.WAITING)  // side effects
             userRepository.findById(renter.id).ifPresentOrElse({}, { userRepository.save(renter) })  // side effects
@@ -23,21 +23,21 @@ class CarRenting @Autowired constructor(val carRepository: CarRepository,
         }
     }
 
-    fun approveRentingContract(sale: Employee, contract: Contract): Optional<Contract> {
+    override fun approveRentingContract(sale: Employee, contract: Contract): Optional<Contract> {
         return employeeRepository.findById(sale.id).flatMap { existedSale ->
             carRepository.findById(contract.car).map { updateCarStatus(it, CarStatus.RENTING) } // side effects
                     .map { contractRepository.save(contract.copy(sale = existedSale.id)) }
         }
     }
 
-    fun transferToMaintenance(maintainer: Employee, contract: Contract): Optional<Contract> {
+    override fun makePayment(maintainer: Employee, contract: Contract): Optional<Contract> {
         return employeeRepository.findById(maintainer.id).flatMap { existedMaintainer ->
             carRepository.findById(contract.car).map { updateCarStatus(it, CarStatus.MAINTENANCE) } // side effects
                     .map { contractRepository.save(contract.copy(maintainer = existedMaintainer.id)) }
         }
     }
 
-    fun finishMaintenance(contract: Contract, maintenanceDetails: String): Optional<Contract> {
+    override fun finishMaintenance(contract: Contract, maintenanceDetails: String): Optional<Contract> {
         return contractRepository.findById(contract.id)
                 .map { existedContract ->
                     carRepository.findById(existedContract.car)
