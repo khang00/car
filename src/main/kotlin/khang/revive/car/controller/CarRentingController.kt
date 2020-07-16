@@ -14,8 +14,8 @@ import org.springframework.web.bind.annotation.*
 
 @RequestMapping("renting")
 @RestController
-class CarRenting @Autowired constructor(private val rentingService: RentingService,
-                                        private val carRepository: CarRepository) {
+class CarRentingController @Autowired constructor(private val rentingService: RentingService,
+                                                  private val carRepository: CarRepository) {
     data class RentRequest(val car: Car, val renter: User)
 
     @PostMapping

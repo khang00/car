@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController
 
 @RequestMapping("/authenticate")
 @RestController
-class Authentication @Autowired constructor(private val authenticationService: AuthenticationService) {
+class AuthenticationController @Autowired constructor(private val authenticationService: AuthenticationService) {
     @PostMapping
     fun login(@RequestBody employee: Employee): ResponseEntity<String> {
         return if (authenticationService.authenticate(employee)) {

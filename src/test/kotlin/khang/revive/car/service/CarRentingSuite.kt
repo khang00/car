@@ -85,7 +85,7 @@ class CarRentingSuite @Autowired constructor(private val carRenting: CarRenting,
         val renter = User()
         val rentingContract = carRenting.rentCar(renter, car)
         val approvedContract = carRenting.approveRentingContract(sale, rentingContract.get())
-        val maintenanceContract = carRenting.transferToMaintenance(maintainer, approvedContract.get())
+        val maintenanceContract = carRenting.makePayment(maintainer, approvedContract.get())
 
         // Employee should be existed
         assert(employeeRepository.findById(maintainer.id).isPresent)
@@ -104,7 +104,7 @@ class CarRentingSuite @Autowired constructor(private val carRenting: CarRenting,
         val nonExistedEmployee = Employee(role = EmployeeRole.MAINTAINER, name = "", account = "", password = "")
         val rentingContract = carRenting.rentCar(renter, car)
         val approvedContract = carRenting.approveRentingContract(sale, rentingContract.get())
-        val maintenanceContract = carRenting.transferToMaintenance(nonExistedEmployee, approvedContract.get())
+        val maintenanceContract = carRenting.makePayment(nonExistedEmployee, approvedContract.get())
 
         //contract should be empty
         assert(maintenanceContract.isEmpty)
@@ -116,7 +116,7 @@ class CarRentingSuite @Autowired constructor(private val carRenting: CarRenting,
         val renter = User()
         val rentingContract = carRenting.rentCar(renter, car)
         val approvedContract = carRenting.approveRentingContract(sale, rentingContract.get())
-        val maintenanceContract = carRenting.transferToMaintenance(maintainer, approvedContract.get())
+        val maintenanceContract = carRenting.makePayment(maintainer, approvedContract.get())
         val endContract = carRenting.finishMaintenance(maintenanceContract.get(), "oke")
 
         // Employee should be existed
