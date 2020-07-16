@@ -17,5 +17,6 @@ data class Car(@Id val id: String = ObjectId.get().toHexString(),
                val seat: String = "",
                val description: String = "",
                val postedDate: LocalDate = LocalDate.now(),
-               val lastMaintenanceDate: LocalDate = LocalDate.now()
+               val lastMaintenanceDate: LocalDate = LocalDate.now(),
+               val imageUrls: List<String> = listOf("https://media.wired.com/photos/5d09594a62bcb0c9752779d9/master/w_2560%2Cc_limit/Transpo_G70_TA-518126.jpg")
 )
