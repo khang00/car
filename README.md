@@ -12,7 +12,7 @@ All the data listed in this section are minimal requirements to use the endpoint
     password: "1"
 }
 ```
-### Car Renting
+### Car Renting ("/renting")
 * Find car by its id: **GET "/car?id="...""**
 * Find cars which are available for renting: **GET "/car/available"**
 * Rent car: **POST "/renting"**
@@ -24,7 +24,7 @@ All the data listed in this section are minimal requirements to use the endpoint
     user: {},
 }
 ```
-### Renting Request Management
+### Renting Request Management ("/sale)
 * Find rent requests which have been approved: **GET "/contract/approved?account="employee account"**
 * Find rent requests which have been approved by an employee: **GET "/contract/approved"**
 * Find rent requests which have not been approved: **GET "/contract/waiting"**
