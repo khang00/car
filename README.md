@@ -1,5 +1,6 @@
 # car
-A project to improve the CarRentalManagement project
+A project to improve the [CarRentalManagement](https://github.com/khang00/CarRentalManagement) project.
+The API is hosted at [Car](https://carredo.herokuapp.com/)
 
 ## API
 All the data listed in this section are minimal requirements to use the endpoints.
