@@ -1,9 +1,9 @@
 # car
 A project to improve the CarRentalManagement project
 
-##API
+## API
 All the data listed in this section are minimal requirements to use the endpoints.
-###Authentication
+### Authentication
 * Authenticate employees: **POST "/authenticate"**
 ```
 {
@@ -11,7 +11,7 @@ All the data listed in this section are minimal requirements to use the endpoint
     password: "1"
 }
 ```
-###Car Renting
+### Car Renting
 * Find car by its id: **GET "/car?id="...""**
 * Find cars which are available for renting: **GET "/car/available"**
 * Rent car: **POST "/renting"**
