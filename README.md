@@ -27,7 +27,7 @@ All the data listed in this section are minimal requirements to use the endpoint
 * Find rent requests which have been approved: **GET "/contract/approved?account="employee account"**
 * Find rent requests which have been approved by an employee: **GET "/contract/approved"**
 * Find rent requests which have not been approved: **GET "/contract/waiting"**
-* To approve for a renting request: **PUT "/contract/payment"**
+* To approve for a renting request: **PUT "/contract/approve"**
 ```
 {
     employee: {
