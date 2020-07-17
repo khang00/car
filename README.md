@@ -24,7 +24,7 @@ All the data listed in this section are minimal requirements to use the endpoint
     user: {},
 }
 ```
-### Renting Request Management ("/sale)
+### Renting Request Management ("/sale")
 * Find rent requests which have been approved: **GET "/contract/approved?account="employee account"**
 * Find rent requests which have been approved by an employee: **GET "/contract/approved"**
 * Find rent requests which have not been approved: **GET "/contract/waiting"**
