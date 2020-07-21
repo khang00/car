@@ -46,3 +46,24 @@ All the data listed in this section are minimal requirements to use the endpoint
     contract: "[the contract id]",
 }
 ```
+
+### Manager use cases ("/manager")
+* Get all car: __GET "/car"__
+* Get all employee: __GET "/employee"__
+* Add a new employee: __POST "/employee"__
+```
+{
+    role: "SALE",
+    name: "khang",
+    account: "khang01"
+}
+```
+* Add a new car: __POST "/car"
+```
+{
+    model: "GTX-1024",
+    brand: "yamaha",
+    color: "black",
+    seat: "4"
+}
+```
